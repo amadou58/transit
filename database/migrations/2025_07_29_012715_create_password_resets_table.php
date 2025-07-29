@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('destinations', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('password_resets', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->string('email');
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
         });
     }
 
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('destinations');
+        Schema::dropIfExists('password_resets');
     }
 };

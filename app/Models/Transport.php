@@ -27,9 +27,11 @@ class Transport extends Model
         'frais_circuit',
         'frais_rapport',
         'frais_ts',
+        'total_frais',
         'prix',
+        'benefice_esperer',
         'paiement',
-        'benefice',
+        'benefice_reel',
         'user_id',
     ];
 

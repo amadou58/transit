@@ -33,9 +33,11 @@ class TransportController extends Controller
             ->addColumn('frais_circuit', fn($row) => number_format($row->frais_circuit, 2))
             ->addColumn('frais_rapport', fn($row) => number_format($row->frais_rapport, 2))
             ->addColumn('frais_ts', fn($row) => number_format($row->frais_ts, 2))
+            ->addColumn('total_frais', fn($row) => number_format($row->total_frais, 2))
             ->addColumn('prix', fn($row) => number_format($row->prix, 2))
+            ->addColumn('benefice_esperer', fn($row) => number_format($row->benefice_esperer, 2))
             ->addColumn('paiement', fn($row) => number_format($row->paiement, 2))
-            ->addColumn('benefice', fn($row) => number_format($row->benefice, 2))
+            ->addColumn('benefice_reel', fn($row) => number_format($row->benefice_reel, 2))
             ->addColumn('user', fn($row) => $row->user->prenom. ' ' .$row->user->name ?? 'N/A')
             ->addColumn('actions', function ($row) {
                 $edit = '<a href="' . route('transports.edit', $row->id) . '" class="text-blue-500 hover:text-blue-700 mr-2" title="Modifier">
@@ -82,29 +84,36 @@ class TransportController extends Controller
             'prix' => 'required',
             'paiement' => 'required',
         ]);
-            
-        
-        $benefice = (($request->input('paiement')) - ($request->input('prix')));
 
-       $transport = Transport::create([
-            'date'=>$request->date,
-            'designation' => $request->designation,
-            'immatriculation_vehicule' => $request->immatriculation_vehicule,
-            'destination_id' => $request->destination_id,
-            'numero_declaration' => $request->numero_declaration,
-            'client_id' => $request->client_id,
-            'poids' => $request->poids,
-            'droit_douane' => $request->droit_douane,
-            'frais_kati' => $request->frais_kati,
-            'frais_frontiere' => $request->frais_frontiere,
-            'frais_circuit' => $request->frais_circuit,
-            'frais_rapport' => $request->frais_rapport,
-            'frais_ts' => $request->frais_ts,
-            'prix' => $request->prix,
-            'paiement' => $request->paiement,
-            'benefice' => $benefice,
-            'user_id'=>auth()->id(),
-        ]);
+            // Calcul des frais
+            $total_frais = $validated['droit_douane'] + $validated['frais_kati'] + $validated['frais_frontiere']
+                        + $validated['frais_circuit'] + $validated['frais_rapport'] + $validated['frais_ts'];
+
+            $benefice_esperer = $validated['prix'] - $total_frais;
+            $benefice_reel = $validated['paiement'] - $total_frais;
+
+            // Enregistrement
+            $transport = Transport::create([
+                'date' => $validated['date'],
+                'designation' => $validated['designation'],
+                'immatriculation_vehicule' => $validated['immatriculation_vehicule'],
+                'destination_id' => $validated['destination_id'],
+                'numero_declaration' => $validated['numero_declaration'],
+                'client_id' => $validated['client_id'],
+                'poids' => $validated['poids'],
+                'droit_douane' => $validated['droit_douane'],
+                'frais_kati' => $validated['frais_kati'],
+                'frais_frontiere' => $validated['frais_frontiere'],
+                'frais_circuit' => $validated['frais_circuit'],
+                'frais_rapport' => $validated['frais_rapport'],
+                'frais_ts' => $validated['frais_ts'],
+                'total_frais' => $total_frais,
+                'prix' => $validated['prix'],
+                'benefice_esperer' => $benefice_esperer,
+                'paiement' => $validated['paiement'],
+                'benefice_reel' => $benefice_reel,
+                'user_id' => auth()->id(),
+            ]);
         if ($transport->save()) {
             return back()->with("success", "Enregistrement Effectué avec succès!");
         } else {
@@ -155,13 +164,39 @@ class TransportController extends Controller
             'paiement' => 'required|numeric',
         ]);
 
-        // Ajoute manuellement l'user_id
-        $validated['user_id'] = auth()->id();
+        // Calculs
+        $total_frais = $validated['droit_douane'] + $validated['frais_kati'] + $validated['frais_frontiere']
+                    + $validated['frais_circuit'] + $validated['frais_rapport'] + $validated['frais_ts'];
 
-        $transport->update($validated);
+        $benefice_esperer = $validated['prix'] - $total_frais;
+        $benefice_reel = $validated['paiement'] - $total_frais;
 
-        return redirect()->route('transports.index')->with('success', 'Transport updated successfully!');
+        // Mise à jour
+        $transport->update([
+            'date' => $validated['date'],
+            'designation' => $validated['designation'],
+            'immatriculation_vehicule' => $validated['immatriculation_vehicule'],
+            'destination_id' => $validated['destination_id'],
+            'numero_declaration' => $validated['numero_declaration'],
+            'client_id' => $validated['client_id'],
+            'poids' => $validated['poids'],
+            'droit_douane' => $validated['droit_douane'],
+            'frais_kati' => $validated['frais_kati'],
+            'frais_frontiere' => $validated['frais_frontiere'],
+            'frais_circuit' => $validated['frais_circuit'],
+            'frais_rapport' => $validated['frais_rapport'],
+            'frais_ts' => $validated['frais_ts'],
+            'total_frais' => $total_frais,
+            'prix' => $validated['prix'],
+            'benefice_esperer' => $benefice_esperer,
+            'paiement' => $validated['paiement'],
+            'benefice_reel' => $benefice_reel,
+            'user_id' => auth()->id(),
+        ]);
+
+        return redirect()->route('transports.index')->with('success', 'Transport mis à jour avec succès !');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -196,14 +231,26 @@ class TransportController extends Controller
                 ], 403);
             }
 
-            // Sinon, mettre à jour le champ (facultatif ici si tu veux appliquer à la volée)
-            $transport->update([
-                $field => $value
-            ]);
+            // Mise à jour du champ demandé
+            $transport->$field = $value;
+
+            // Recalcul des frais et bénéfices
+            $total_frais = $transport->droit_douane + $transport->frais_kati + $transport->frais_frontiere
+                        + $transport->frais_circuit + $transport->frais_rapport + $transport->frais_ts;
+
+            $benefice_esperer = $transport->prix - $total_frais;
+            $benefice_reel = $transport->paiement - $total_frais;
+
+            $transport->total_frais = $total_frais;
+            $transport->benefice_esperer = $benefice_esperer;
+            $transport->benefice_reel = $benefice_reel;
+
+            $transport->save();
         }
 
         return response()->json(['status' => 'success']);
     }
+
 
 
 }

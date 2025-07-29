@@ -59,9 +59,11 @@
                         <th class="py-3 px-4 text-left border border-red-500">Frais Circuit (XOF)</th>
                         <th class="py-3 px-4 text-left border border-red-500">Frais Rapport (XOF)</th>
                         <th class="py-3 px-4 text-left border border-red-500">Frais TS (XOF)</th>
+                        <th class="py-3 px-4 text-left border border-red-500">Total Frais (XOF)</th>
                         <th class="py-3 px-4 text-left border border-red-500">Prix (XOF)</th>
+                        <th class="py-3 px-4 text-left border border-red-500">Bénéfice Espéré (XOF)</th>
                         <th class="py-3 px-4 text-left border border-red-500">Paiement (XOF)</th>
-                        <th class="py-3 px-4 text-left border border-red-500">Bénéfice (XOF)</th>
+                        <th class="py-3 px-4 text-left border border-red-500">Bénéfice Réel (XOF)</th>
                         <th class="py-3 px-4 text-left border border-red-500">Saisie</th>
                         <th class="py-3 px-4 text-left border border-red-500">Actions</th>
                     </tr>
@@ -103,9 +105,11 @@
                 { data: 'frais_circuit', name: 'frais_circuit' },
                 { data: 'frais_rapport', name: 'frais_rapport' },
                 { data: 'frais_ts', name: 'frais_ts' },
+                { data: 'total_frais', name: 'total_frais' },
                 { data: 'prix', name: 'prix' },
+                { data: 'benefice_esperer', name: 'benefice_esperer' },
                 { data: 'paiement', name: 'paiement' },
-                { data: 'benefice', name: 'benefice' },
+                { data: 'benefice_reel', name: 'benefice_reel' },
                 { data: 'user', name: 'user' },
                 { data: 'actions', name: 'actions', orderable: false, searchable: false },
             ],

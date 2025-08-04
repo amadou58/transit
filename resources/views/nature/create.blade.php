@@ -75,13 +75,15 @@
                             <td class="py-3 px-4">{{ $nature->nom }}</td>
                             <td class="py-3 px-4">{{ $nature->type }}</td>
                             <td class="py-3 px-4 text-center">
-                                <a href="{{ route('nature.edit', ['nature' => $nature->id]) }}" class="text-blue-500 hover:text-blue-700">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                &nbsp;&nbsp;
-                                <button class="text-red-500 hover:text-red-700 delete-nature" data-natureid="{{ $nature->id }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                @if (auth()->user()->fonction === 'Admin')
+                                    <a href="{{ route('nature.edit', ['nature' => $nature->id]) }}" class="text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    &nbsp;&nbsp;
+                                    <button class="text-red-500 hover:text-red-700 delete-nature" data-natureid="{{ $nature->id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

@@ -20,9 +20,13 @@ class ClientController extends Controller
             return DataTables::of($clients)
                 ->addIndexColumn()
                 ->addColumn('actions', function($row){
-                    $edit = '<a href="'.route('client.edit', $row->id).'" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></a>';
-                    $delete = '<button class="text-red-500 hover:text-red-700 delete-client" data-clientid="'.$row->id.'"><i class="fas fa-trash"></i></button>';
-                    return $edit . '&nbsp;&nbsp;' . $delete;
+                $user = auth()->user();
+                
+                    if ($user->fonction === 'Admin') { 
+                        $edit = '<a href="'.route('client.edit', $row->id).'" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></a>';
+                        $delete = '<button class="text-red-500 hover:text-red-700 delete-client" data-clientid="'.$row->id.'"><i class="fas fa-trash"></i></button>';
+                        return $edit . '&nbsp;&nbsp;' . $delete;
+                    }
                 })
                 ->rawColumns(['actions'])
                 ->make(true);

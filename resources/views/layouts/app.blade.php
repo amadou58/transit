@@ -295,7 +295,11 @@
                     </li>
                 </ul>
             </div>
-
+            @if(auth()->user() && auth()->user()->fonction === 'Admin')
+                <a href="{{ route('caisses.index') }}" class="flex items-center  text-white opacity-100  py-4 pl-6 nav-item" data-nav-item="accueil">
+                    <i class="fas fa-list mr-3"></i>Caisse
+                </a>
+            @endif
             <div x-data="{ isOpen: localStorage.getItem('Configuration') === 'open' }" class="rounded shadow">
                 <a @click="isOpen = !isOpen; localStorage.setItem('Configuration', isOpen ? 'open' : 'closed')" class="flex items-center hover:opacity-100 py-4 pl-6 nav-item cursor-pointer" data-nav-item="Configuration">
                     <i class="fas fa-sliders-h mr-3"></i>
@@ -343,12 +347,12 @@
                 </ul> 
                 {{-- @endif --}}
             </div> 
-            <a href="{{ route('caisses.index') }}" class="flex items-center  text-white opacity-100  py-4 pl-6 nav-item" data-nav-item="accueil">
-                <i class="fas fa-list mr-3"></i>Caisse
-            </a>
-            <a href="{{ route('navigation-logs.index') }}" class="flex items-center  text-white opacity-100  py-4 pl-6 nav-item" data-nav-item="accueil">
-                <i class="fas fa-list mr-3"></i>Journal de Navigation
-            </a>
+            
+            @if(auth()->user() && auth()->user()->fonction === 'Admin')
+                <a href="{{ route('navigation-logs.index') }}" class="flex items-center  text-white opacity-100  py-4 pl-6 nav-item" data-nav-item="accueil">
+                    <i class="fas fa-list mr-3"></i>Journal de Navigation
+                </a>
+            @endif
         </nav>
     </aside>
 

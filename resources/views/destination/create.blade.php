@@ -64,13 +64,15 @@
                             <td class="py-3 px-4">{{ $index + 1 }}</td>
                             <td class="py-3 px-4">{{ $dest->nom }}</td>
                             <td class="py-3 px-4 text-center">
-                                <a href="{{ route('destination.edit', ['destination' => $dest->id]) }}" class="text-blue-500 hover:text-blue-700">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                &nbsp;&nbsp;
-                                <button class="text-red-500 hover:text-red-700 delete-destination" data-destinationid="{{ $dest->id }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                @if (auth()->user()->fonction === 'Admin')
+                                    <a href="{{ route('destination.edit', ['destination' => $dest->id]) }}" class="text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    &nbsp;&nbsp;
+                                    <button class="text-red-500 hover:text-red-700 delete-destination" data-destinationid="{{ $dest->id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

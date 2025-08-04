@@ -34,14 +34,18 @@ class EncaissementController extends Controller
                 return $row->montant;
             })
             ->addColumn('actions', function ($row) {
-                $edit = '<a href="' . route('encaissements.edit', $row->id) . '" class="text-blue-500 hover:text-blue-700 mr-2" title="Modifier">
-                            <i class="fas fa-edit"></i>
-                        </a>';
-                $delete = '
-                        <button class="text-red-500 hover:text-red-700 delete-encaissement" data-encaissementid="' . $row->id . '" title="Supprimer">
-                            <i class="fas fa-trash"></i>
-                        </button>';
-                return $edit . $delete;
+                $user = auth()->user();
+                
+                if ($user->fonction === 'Admin') { 
+                    $edit = '<a href="' . route('encaissements.edit', $row->id) . '" class="text-blue-500 hover:text-blue-700 mr-2" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </a>';
+                    $delete = '
+                            <button class="text-red-500 hover:text-red-700 delete-encaissement" data-encaissementid="' . $row->id . '" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>';
+                    return $edit . $delete;
+                }
             })
             ->rawColumns(['actions'])
             ->make(true);
